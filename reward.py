@@ -60,28 +60,23 @@ def reward_function(params):
         angle_degrees = math.degrees(angle_radians)
         return angle_degrees
 
-    pos_target = quadratic_bezier(target_min, target_control, target_max, .5)
-    heading_target = calculate_heading_cartesian(params['x'], params['y'], pos_target[0], pos_target[1])
+    target_pos_heading = quadratic_bezier(target_min, target_control, target_max, .5)
+    target_pos_steering = quadratic_bezier(target_min, target_control, target_max, .8)
+    heading_target = calculate_heading_cartesian(params['x'], params['y'], target_pos_heading[0], target_pos_heading[1])
+    steering_target = calculate_heading_cartesian(params['x'], params['y'], target_pos_steering[0], target_pos_steering[1])
+
+
+    heading_error = abs(params['heading']-heading_target)
+    steering_error = abs(params['heading']+params['steering_angle']-steering_target)
+
+    heading_error_reward_weight = (360-heading_error)/360
+    steering_error_reward_weight = (360-steering_error)/360
+
    
-   
-    # Read input parameters
-    track_width = params['track_width']
-    distance_from_center = params['distance_from_center']
-   
-    # Calculate 3 markers that are at varying distances away from the center line
-    marker_1 = 0.1 * track_width
-    marker_2 = 0.25 * track_width
-    marker_3 = 0.5 * track_width
-   
-    # Give higher reward if the car is closer to center line and vice versa
-    if distance_from_center <= marker_1:
-        reward = 1.0
-    elif distance_from_center <= marker_2:
-        reward = 0.5
-    elif distance_from_center <= marker_3:
-        reward = 0.1
-    else:
-        reward = 1e-3  # likely crashed/ close to off track
+    if not params['all_wheels_on_track']:
+        return 1e-3
+    
+    reward = 1 * heading_error_reward_weight * steering_error_reward_weight
    
     return float(reward)
 
@@ -93,7 +88,9 @@ params = {
     "waypoints":[(43.13, 12.21),(36.85, 20.61),(31.94, 42.07),(8.62, 16.71),(3.98, 46.45),(42.22, 35.33),(31.49, 20.87),(32.45, 14.88),(20.52, 47.52),(25.58, 41.12)],
     "closest_waypoints": [7,8],
     "track_width": 20,
-    "distance_from_center": 3
+    "distance_from_center": 3,
+    "steering_angle": -15,
+    "all_wheels_on_track": True
 }
 
 print(reward_function(params))
