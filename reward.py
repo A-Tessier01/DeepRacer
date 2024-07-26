@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 #Bezier target heuristic based reward function
 def reward_function(params):
@@ -126,4 +127,8 @@ params = {
     "all_wheels_on_track": True
 }
 
-print(reward_function_v2(params))
+# print(reward_function_v2(params))
+
+def read_npy_file(path):
+    try:
+        data = np.
