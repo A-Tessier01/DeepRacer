@@ -88,8 +88,58 @@ def reward_function_v2(params):
     # -left +right
     signed_waypoint_variation = min(waypoint_headings)-max(waypoint_headings)
 
+import math
+def reward_function_v3(params):
+
+    current_waypoint = params['closest_waypoints'][1]
+   
+    waypoints = params['waypoints']
+   
+    target_waypoint_min = (current_waypoint)%len(waypoints)
+    target_waypoint_control_1 = (current_waypoint+5)%len(waypoints)
+    target_waypoint_control_2 = (current_waypoint+10)%len(waypoints)
+    target_waypoint_max = (current_waypoint+15)%len(waypoints)
+    
+    target_min = waypoints[target_waypoint_min]
+    target_control_1 = waypoints[target_waypoint_control_1]
+    target_control_2 = waypoints[target_waypoint_control_2]
+    target_max = waypoints[target_waypoint_max]
+   
+    
+    def cubic_bezier(P0, P1, P2, P3, t):
+        x = (1-t)**3 * P0[0] + 3*(1-t)**2 * t * P1[0] + 3*(1-t) * t**2 * P2[0] + t**3 * P3[0]
+        y = (1-t)**3 * P0[1] + 3*(1-t)**2 * t * P1[1] + 3*(1-t) * t**2 * P2[1] + t**3 * P3[1]
+        return (x, y)
+        
+    def calculate_heading_cartesian(x1, y1, x2, y2):
+        # Calculate the differences
+        delta_x = x2 - x1
+        delta_y = y2 - y1
+        # Calculate the angle in radians
+        angle_radians = math.atan2(delta_y, delta_x)
+        # Convert the angle from radians to degrees
+        angle_degrees = math.degrees(angle_radians)
+        return angle_degrees
+
+    target_pos_heading = cubic_bezier(target_min, target_control_1, target_control_2, target_max, .5)
+    target_pos_steering = cubic_bezier(target_min, target_control_1, target_control_2, target_max, .8)
+    heading_target = calculate_heading_cartesian(params['x'], params['y'], target_pos_heading[0], target_pos_heading[1])
+    steering_target = calculate_heading_cartesian(params['x'], params['y'], target_pos_steering[0], target_pos_steering[1])
 
 
+    heading_error = abs(params['heading']-heading_target)
+    steering_error = abs(params['heading']+params['steering_angle']-steering_target)
+
+    heading_error_reward_weight = (360-heading_error)/360
+    steering_error_reward_weight = (360-steering_error)/360
+
+   
+    if not params['all_wheels_on_track']:
+        return 1e-3
+    
+    reward = 1 * heading_error_reward_weight * steering_error_reward_weight
+   
+    return float(reward)
 
 
 
@@ -129,6 +179,3 @@ params = {
 
 # print(reward_function_v2(params))
 
-def read_npy_file(path):
-    try:
-        data = np.
