@@ -68,7 +68,7 @@ def calc_bezier_points(window, type='q'):
 fig, ax = plt.subplots()
 
 ax_slider = plt.axes([0.1, 0.1, 0.8, 0.03])
-slider = Slider(ax_slider, 'future_window', 0.1, 20, valinit=1.0)
+slider = Slider(ax_slider, 'future_window', 0.1, 40, valinit=1.0)
 
 def update(val):
        future_window = slider.val
@@ -92,3 +92,12 @@ plt.title('Ross Raceway')
 ax.grid(True)
 ax.legend()
 plt.show()
+
+    # def get_next_n_waypoints(s, n, waypoint_list):
+    #     new_lst = []
+    #     if n>len(waypoint_list):
+    #         new_lst.extend(waypoint_list[s:])
+    #         new_lst.extend(waypoint_list[:n-len(new_lst)])
+    #     else:
+    #         new_lst = waypoint_list[s,n]
+    #     return new_lst

@@ -165,6 +165,32 @@ def reward_function_v3(params):
    
     return float(reward)
 
+def reward_v4(params):
+    current_waypoint = params['closest_waypoints'][1]
+   
+    waypoints = params['waypoints']
+   
+    target_waypoint_min = (current_waypoint)%len(waypoints)
+    target_waypoint_control_1 = (current_waypoint+5)%len(waypoints)
+    target_waypoint_control_2 = (current_waypoint+10)%len(waypoints)
+    target_waypoint_max = (current_waypoint+15)%len(waypoints)
+    
+    target_min = waypoints[target_waypoint_min]
+    target_control_1 = waypoints[target_waypoint_control_1]
+    target_control_2 = waypoints[target_waypoint_control_2]
+    target_max = waypoints[target_waypoint_max]
+
+    def cubic_bezier(P0, P1, P2, P3, t):
+        x = (1-t)**3 * P0[0] + 3*(1-t)**2 * t * P1[0] + 3*(1-t) * t**2 * P2[0] + t**3 * P3[0]
+        y = (1-t)**3 * P0[1] + 3*(1-t)**2 * t * P1[1] + 3*(1-t) * t**2 * P2[1] + t**3 * P3[1]
+        return (x, y)
+    
+    def get_bezier_race_line()
+
+
+
+
+
 params = {
     "x":10,
     "y":15,
