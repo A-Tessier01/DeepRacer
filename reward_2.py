@@ -1,22 +1,23 @@
 import math
 
-#Props
-consideration_window = 18
-t_steering = 2/consideration_window
-t_heading = 1/consideration_window
-heading_deviation = 10
-steering_deviation = 10
-speed_deviation = .25
-curvature_prediction_waypoints = (5,10)
-max_speed = 4
-min_speed = 1.5
-speed_falloff = 8
-relative_action_reward_weights = [.3333, .3333, .3333] # Heading, Steering, Speed
 
 
 def reward(params):
-    
-    waypoints = params['waypoints']
+
+    #Props
+    consideration_window = 18
+    t_steering = 2/consideration_window
+    t_heading = 1/consideration_window
+    heading_deviation = 10
+    steering_deviation = 10
+    speed_deviation = .25
+    curvature_prediction_window = (1,10)
+    max_speed = 4
+    min_speed = 1.5
+    speed_falloff = 8
+    relative_action_reward_weights = [.3333, .3333, .3333] # Heading, Steering, Speed
+        
+    waypoints = co['waypoints']
     waypoints = waypoints[:-1]
     current_pos = (params['x'],params['y'])
 
@@ -47,7 +48,7 @@ def reward(params):
         #end bezier stuff
         steering_target_pt = cubic_bezier(start_pt, cp_1, cp_2, end_pt, t_steering)
         heading_target_pt = cubic_bezier(start_pt, cp_1, cp_2, end_pt, t_heading)
-        speed_target = calc_target_speed([start_pt, end_pt])
+        speed_target = calc_target_speed([start_pt+curvature_prediction_window[0], start_pt+curvature_prediction_window[1]])
         steering_target = calculate_heading_cartesian(current_pos, steering_target_pt)
         heading_target = calculate_heading_cartesian(current_pos, heading_target_pt)
         return (heading_target, steering_target, speed_target)
