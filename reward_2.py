@@ -17,7 +17,7 @@ def reward(params):
     speed_falloff = 8
     relative_action_reward_weights = [.3333, .3333, .3333] # Heading, Steering, Speed
         
-    waypoints = co['waypoints']
+    waypoints = params['waypoints']
     waypoints = waypoints[:-1]
     current_pos = (params['x'],params['y'])
 
@@ -115,20 +115,6 @@ def reward(params):
     return reward
 
 
-def test1():
-    params = {
-        "x":10,
-        "y":15,
-        "heading":47.2,
-        "waypoints":[(43.13, 12.21),(36.85, 20.61),(31.94, 42.07),(8.62, 16.71),(3.98, 46.45),(42.22, 35.33),(31.49, 20.87),(32.45, 14.88),(20.52, 47.52),(25.58, 41.12)],
-        "closest_waypoints": [7,8],
-        "track_width": 20,
-        "distance_from_center": 3,
-        "steering_angle": -15,
-        "all_wheels_on_track": True,
-        "speed": 3.21
-    }
-
 
 params = {
     "x":10,
@@ -142,3 +128,6 @@ params = {
     "all_wheels_on_track": True,
     "speed": 3.21
 }
+
+
+print(reward(params))
