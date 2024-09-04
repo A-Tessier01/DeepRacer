@@ -32,7 +32,7 @@ def reward(params):
         lst = []
         for waypoint in range(s, s+n):
             lst.append(waypoints[waypoint % len(waypoints)])
-        return
+        return lst
 
     def get_car_and_window_points(waypoints):
         lst = [current_pos]
@@ -42,13 +42,13 @@ def reward(params):
     def calc_targets(points):
         #bezier stuff - dynamic calc params
         start_pt = points[0]
-        cp_1 = len(int(points/3))
-        cp_2 = len(2*int(points/3))
+        cp_1 = points[int(len(points)/3)]
+        cp_2 = points[2*int(len(points)/3)]
         end_pt = points[-1]
         #end bezier stuff
         steering_target_pt = cubic_bezier(start_pt, cp_1, cp_2, end_pt, t_steering)
         heading_target_pt = cubic_bezier(start_pt, cp_1, cp_2, end_pt, t_heading)
-        speed_target = calc_target_speed([start_pt+curvature_prediction_window[0], start_pt+curvature_prediction_window[1]])
+        speed_target = calc_target_speed(points[curvature_prediction_window[0]: curvature_prediction_window[1]])
         steering_target = calculate_heading_cartesian(current_pos, steering_target_pt)
         heading_target = calculate_heading_cartesian(current_pos, heading_target_pt)
         return (heading_target, steering_target, speed_target)
@@ -56,7 +56,9 @@ def reward(params):
     def calc_track_curvature(points):
         init_pt = points[0]
         end_pt = points[1]
-        return calc_angle_delta(init_pt, end_pt)
+        init_heading = calculate_heading_cartesian(current_pos, init_pt)
+        end_heading = calculate_heading_cartesian(current_pos, end_pt)
+        return calc_angle_delta(init_heading, end_heading)
 
     def calculate_heading_cartesian(p1, p2):
         # Calculate the differences
@@ -109,7 +111,8 @@ def reward(params):
             total_reward += reward*weight
         return total_reward
 
-    all_rel_pts = get_car_and_window_points(get_next_n_waypoints(current_waypoint, consideration_window, waypoints))
+    considered_waypoints = get_next_n_waypoints(current_waypoint, consideration_window, waypoints)
+    all_rel_pts = get_car_and_window_points(considered_waypoints)
     targets = calc_targets(all_rel_pts)
     reward = get_reward_aggragate(targets)
     return reward
