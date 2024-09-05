@@ -1,5 +1,5 @@
 import math
-
+import numpy as np
 #exponential reward falloff
 
 def reward(params):
@@ -92,22 +92,22 @@ def reward(params):
 
     def calc_heading_reward(current_heading, target_heading, deviation):
         angle_diff = abs(calc_angle_delta(current_heading, target_heading))
-        print(angle_diff)
-        print(current_heading, target_heading)
-        normalized_angle_diff = (-math.sqrt(angle_diff/180))+1
+        # print(current_heading, target_heading)
+        normalized_angle_diff = (-1*math.sqrt(angle_diff/180))+1
         return normalized_angle_diff
         
     def calc_steering_reward(current_heading, current_steering_angle, target_steering_angle, deviation):
         absolute_steering_angle = current_heading+current_steering_angle
         steering_diff = abs(calc_angle_delta(absolute_steering_angle, target_steering_angle))
         # print(steering_diff)
-        normalized_steering_diff = (-math.sqrt(steering_diff/(2 * max_steering_angle))) + 1 
+        normalized_steering_diff = (-1*math.sqrt(steering_diff/(2 * max_steering_angle))) + 1 
         return normalized_steering_diff
 
     def calc_speed_reward(current_speed, target_speed, speed_deviation):
         speed_diff = abs(current_speed - target_speed)
-        # print(speed_diff)
+        print("speed diff", speed_diff)
         normalized_speed_diff = (-math.sqrt(speed_diff/(max_speed-min_speed))) + 1
+        print("nmlz sd", normalized_speed_diff)
         return normalized_speed_diff
     
     def get_reward_aggragate(targets):
@@ -116,8 +116,8 @@ def reward(params):
         speed_reward = calc_speed_reward(params['speed'], targets[2], speed_deviation)
         print("--------------Rewards-------------")
         print(heading_reward)
-        # print(steering_reward)
-        # print(speed_reward)
+        print(steering_reward)
+        print(speed_reward)
         total_reward = 0
         for weight, reward in zip(relative_action_reward_weights, [heading_reward, steering_reward, speed_reward]):
             total_reward += reward*weight
@@ -129,13 +129,19 @@ def reward(params):
     reward = get_reward_aggragate(targets)
     return reward
 
-
-
+data = np.load('2022_may_open_ccw.npy')
+x_dat = data[:, 0]
+y_dat = data[:, 1]
+print(x_dat)
+waypts = []
+for x,y in zip(x_dat,y_dat):
+    waypts.append([x,y])
+print(waypts)
 params = {
     "x":10,
     "y":15,
     "heading":47.2,
-    "waypoints":[(43.13, 12.21),(36.85, 20.61),(31.94, 42.07),(8.62, 16.71),(3.98, 46.45),(42.22, 35.33),(31.49, 20.87),(32.45, 14.88),(20.52, 47.52),(25.58, 41.12)],
+    "waypoints":waypts,
     "closest_waypoints": [7,8],
     "track_width": 20,
     "distance_from_center": 3,
