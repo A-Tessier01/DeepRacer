@@ -87,13 +87,13 @@ def reward(params):
         target_speed = -(crv/speed_falloff)+max_speed
         return target_speed
 
-    def calc_heading_reward(current_heading, target_heading, deviation):
+    def calc_heading_reward(current_heading, target_heading):
         angle_diff = abs(calc_angle_delta(current_heading, target_heading))
         # print(current_heading, target_heading)
         normalized_angle_diff = (-1*math.sqrt(angle_diff/180))+1
         return normalized_angle_diff
         
-    def calc_steering_reward(current_heading, current_steering_angle, target_steering_angle, deviation):
+    def calc_steering_reward(current_heading, current_steering_angle, target_steering_angle):
         absolute_steering_angle = current_heading+current_steering_angle
         steering_diff = abs(calc_angle_delta(absolute_steering_angle, target_steering_angle))
         normalized_steering_diff = (-1*math.sqrt(steering_diff/(2 * max_steering_angle))) + 1 
