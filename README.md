@@ -1,5 +1,4 @@
 # DeepRacer
 
-at steering reward
-need to figure out -180 , 180 issue, 
-steering angle is current heading + steering angle and see if aligns to target
+Playground for developing reward functions for the AWS Deep Racer contest
+Main innovation is to approximate the optimal raceline with Bezier Curves. With this insight we insentivise the agent to optomize its path to the generated Bezier path. 
